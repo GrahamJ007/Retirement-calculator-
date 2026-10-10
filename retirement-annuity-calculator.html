@@ -1,0 +1,565 @@
+<!-- ============================================================
+  Retirement Annuity Calculator (South Africa)
+  Self-contained: no external scripts, fonts, images or services.
+  Paste this whole file into a WordPress "Custom HTML" block,
+  Divi "Code" module or Elementor "HTML" widget.
+  Settings you may want to change live in the CONFIG object
+  near the top of the <script> section below.
+============================================================= -->
+<div id="wra-calc" class="wra" data-theme-mode="light">
+<style>
+#wra-calc{--wra-accent:#1c5cab;--wra-accent-ink:#ffffff;--wra-bg:#ffffff;--wra-panel:#f6f7f9;--wra-border:#dfe2e7;--wra-text:#14161a;--wra-text-2:#4f545c;--wra-muted:#7a8089;--wra-grid:#e6e8ec;--wra-s1:#2a78d6;--wra-s2:#eb6834;--wra-good:#0f7a3d;--wra-warn:#a35a00;color-scheme:light;font-family:inherit;color:var(--wra-text);background:var(--wra-bg);border:1px solid var(--wra-border);border-radius:14px;padding:24px;max-width:1100px;margin:0 auto;box-sizing:border-box;line-height:1.45;font-size:16px}
+#wra-calc[data-theme-mode="dark"]{--wra-accent:#5598e7;--wra-accent-ink:#0b0b0b;--wra-bg:#17181a;--wra-panel:#202225;--wra-border:#33363b;--wra-text:#f0efec;--wra-text-2:#c3c2b7;--wra-muted:#9a9a92;--wra-grid:#2d3034;--wra-s1:#3987e5;--wra-s2:#d95926;--wra-good:#4cc27e;--wra-warn:#e0a24a;color-scheme:dark}
+@media (prefers-color-scheme:dark){#wra-calc[data-theme-mode="auto"]{--wra-accent:#5598e7;--wra-accent-ink:#0b0b0b;--wra-bg:#17181a;--wra-panel:#202225;--wra-border:#33363b;--wra-text:#f0efec;--wra-text-2:#c3c2b7;--wra-muted:#9a9a92;--wra-grid:#2d3034;--wra-s1:#3987e5;--wra-s2:#d95926;--wra-good:#4cc27e;--wra-warn:#e0a24a;color-scheme:dark}}
+#wra-calc [hidden]{display:none!important}
+#wra-calc *,#wra-calc *::before,#wra-calc *::after{box-sizing:border-box}
+#wra-calc h2,#wra-calc h3,#wra-calc p{margin:0;padding:0;color:inherit;font-family:inherit;letter-spacing:normal;text-transform:none}
+#wra-calc .wra-head{margin-bottom:20px}
+#wra-calc .wra-head h2{font-size:1.6em;line-height:1.2;font-weight:700}
+#wra-calc .wra-head p{color:var(--wra-text-2);margin-top:6px;font-size:.95em}
+#wra-calc .wra-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start}
+#wra-calc .wra-inputs{background:var(--wra-panel);border:1px solid var(--wra-border);border-radius:12px;padding:18px}
+#wra-calc .wra-field{margin-bottom:18px}
+#wra-calc .wra-field:last-child{margin-bottom:0}
+#wra-calc .wra-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+#wra-calc label,#wra-calc .wra-label{font-size:.9em;font-weight:600;color:var(--wra-text);margin:0}
+#wra-calc .wra-hint{font-size:.78em;color:var(--wra-muted);margin-top:4px}
+#wra-calc .wra-num{display:flex;align-items:center;background:var(--wra-bg);border:1px solid var(--wra-border);border-radius:8px;padding:0 8px;min-width:120px;max-width:170px}
+#wra-calc .wra-num:focus-within{border-color:var(--wra-accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--wra-accent) 25%,transparent)}
+#wra-calc .wra-num span{color:var(--wra-muted);font-size:.85em;white-space:nowrap}
+#wra-calc .wra-num input{border:0;outline:0;background:transparent;color:var(--wra-text);font:inherit;font-size:.95em;width:100%;padding:7px 4px;margin:0;box-shadow:none;text-align:right;min-height:0;height:auto;-moz-appearance:textfield;appearance:textfield}
+#wra-calc .wra-num input::-webkit-outer-spin-button,#wra-calc .wra-num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#wra-calc input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--wra-border);outline:0;margin:6px 0 0;padding:0;border:0;box-shadow:none}
+#wra-calc input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--wra-accent);border:3px solid var(--wra-bg);box-shadow:0 0 0 1px var(--wra-accent);cursor:pointer}
+#wra-calc input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--wra-accent);border:3px solid var(--wra-bg);box-shadow:0 0 0 1px var(--wra-accent);cursor:pointer}
+#wra-calc input[type="range"]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--wra-accent)}
+#wra-calc .wra-seg{display:flex;background:var(--wra-bg);border:1px solid var(--wra-border);border-radius:8px;padding:3px;gap:3px}
+#wra-calc .wra-seg button{flex:1;border:0;background:transparent;color:var(--wra-text-2);font:inherit;font-size:.82em;font-weight:600;padding:7px 6px;border-radius:6px;cursor:pointer;margin:0;line-height:1.2;text-transform:none;letter-spacing:normal;box-shadow:none;min-height:0;min-width:0}
+#wra-calc .wra-seg button[aria-pressed="true"]{background:var(--wra-accent);color:var(--wra-accent-ink)}
+#wra-calc .wra-seg button:focus-visible{outline:2px solid var(--wra-accent);outline-offset:1px}
+#wra-calc details.wra-adv{border-top:1px solid var(--wra-border);margin-top:18px;padding-top:12px}
+#wra-calc details.wra-adv summary{cursor:pointer;font-weight:600;font-size:.9em;color:var(--wra-accent);list-style:revert}
+#wra-calc details.wra-adv[open] summary{margin-bottom:14px}
+#wra-calc .wra-results{display:flex;flex-direction:column;gap:16px;min-width:0}
+#wra-calc .wra-hero{background:var(--wra-accent);color:var(--wra-accent-ink);border-radius:12px;padding:20px}
+#wra-calc .wra-hero .wra-k{font-size:.85em;opacity:.9}
+#wra-calc .wra-hero .wra-v{font-size:2.3em;font-weight:800;line-height:1.1;margin:4px 0;font-variant-numeric:tabular-nums}
+#wra-calc .wra-hero .wra-s{font-size:.85em;opacity:.9}
+#wra-calc .wra-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#wra-calc .wra-tile{background:var(--wra-panel);border:1px solid var(--wra-border);border-radius:12px;padding:14px}
+#wra-calc .wra-tile .wra-k{font-size:.78em;color:var(--wra-text-2);font-weight:600}
+#wra-calc .wra-tile .wra-v{font-size:1.35em;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;word-break:break-word}
+#wra-calc .wra-tile .wra-s{font-size:.75em;color:var(--wra-muted);margin-top:2px}
+#wra-calc .wra-card{background:var(--wra-panel);border:1px solid var(--wra-border);border-radius:12px;padding:16px}
+#wra-calc .wra-card h3{font-size:1em;font-weight:700;margin-bottom:4px}
+#wra-calc .wra-card p{font-size:.88em;color:var(--wra-text-2)}
+#wra-calc .wra-card p strong{color:var(--wra-text)}
+#wra-calc .wra-bar{height:10px;background:var(--wra-border);border-radius:5px;overflow:hidden;margin:10px 0 6px}
+#wra-calc .wra-bar i{display:block;height:100%;background:var(--wra-s1);border-radius:5px;transition:width .3s}
+#wra-calc .wra-status{font-weight:700}
+#wra-calc .wra-status.ok{color:var(--wra-good)}
+#wra-calc .wra-status.low{color:var(--wra-warn)}
+#wra-calc .wra-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8em;color:var(--wra-text-2);margin:4px 0 6px}
+#wra-calc .wra-legend span{display:inline-flex;align-items:center;gap:6px}
+#wra-calc .wra-legend i{display:inline-block;width:14px;height:3px;border-radius:2px}
+#wra-calc .wra-chart{position:relative;width:100%;overflow:hidden}
+#wra-calc .wra-chart svg{display:block;width:100%;height:auto;overflow:visible}
+#wra-calc .wra-chart text{font-family:inherit;font-size:11px;fill:var(--wra-muted)}
+#wra-calc .wra-tip{position:absolute;pointer-events:none;background:var(--wra-bg);border:1px solid var(--wra-border);border-radius:8px;padding:8px 10px;font-size:.78em;box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5;color:var(--wra-text)}
+#wra-calc .wra-tip b{display:block;margin-bottom:4px}
+#wra-calc .wra-tip .wra-tr{display:flex;align-items:center;gap:6px;justify-content:space-between}
+#wra-calc .wra-tip .wra-tr i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:4px}
+#wra-calc .wra-tip .wra-tr em{font-style:normal;font-weight:700;margin-left:12px;font-variant-numeric:tabular-nums}
+#wra-calc details.wra-table summary{cursor:pointer;font-size:.85em;font-weight:600;color:var(--wra-accent);margin-top:8px}
+#wra-calc .wra-tbl-wrap{max-height:320px;overflow:auto;margin-top:10px;border:1px solid var(--wra-border);border-radius:8px}
+#wra-calc table{width:100%;border-collapse:collapse;font-size:.8em;margin:0;border:0}
+#wra-calc th,#wra-calc td{padding:6px 10px;text-align:right;border:0;border-bottom:1px solid var(--wra-border);background:transparent;color:var(--wra-text);font-variant-numeric:tabular-nums}
+#wra-calc th{position:sticky;top:0;background:var(--wra-panel);font-weight:700;color:var(--wra-text-2)}
+#wra-calc th:first-child,#wra-calc td:first-child{text-align:left}
+#wra-calc .wra-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--wra-panel);border:1px dashed var(--wra-accent);border-radius:12px;padding:16px}
+#wra-calc .wra-cta p{font-size:.92em;font-weight:600;flex:1 1 220px}
+#wra-calc .wra-cta a{display:inline-block;background:var(--wra-accent);color:var(--wra-accent-ink);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:8px;font-size:.92em}
+#wra-calc .wra-cta a:hover{filter:brightness(1.08)}
+#wra-calc .wra-disc{font-size:.72em;color:var(--wra-muted);margin-top:20px;border-top:1px solid var(--wra-border);padding-top:12px}
+#wra-calc .wra-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:860px){#wra-calc .wra-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){#wra-calc{padding:16px;border-radius:10px}#wra-calc .wra-tiles{grid-template-columns:minmax(0,1fr)}#wra-calc .wra-hero .wra-v{font-size:1.9em}#wra-calc .wra-num{min-width:105px}#wra-calc .wra-seg button{font-size:.74em;padding:7px 2px}}
+</style>
+  <div class="wra-head">
+    <h2>Retirement Annuity Calculator</h2>
+    <p>See how much your retirement annuity (RA) could grow to, what income it could give you, how much tax you could save, and how fees affect your outcome.</p>
+  </div>
+  <div class="wra-grid">
+    <!-- ================= INPUTS ================= -->
+    <form class="wra-inputs" onsubmit="return false" novalidate>
+      <div class="wra-field">
+        <div class="wra-row"><label for="wra-age">Your current age</label><div class="wra-num"><input id="wra-age" type="number" inputmode="numeric" min="18" max="70" step="1" value="30"><span>years</span></div></div>
+        <input type="range" data-for="wra-age" min="18" max="70" step="1" value="30" aria-label="Current age slider">
+      </div>
+      <div class="wra-field">
+        <div class="wra-row"><label for="wra-ret">Retirement age</label><div class="wra-num"><input id="wra-ret" type="number" inputmode="numeric" min="55" max="75" step="1" value="65"><span>years</span></div></div>
+        <input type="range" data-for="wra-ret" min="55" max="75" step="1" value="65" aria-label="Retirement age slider">
+        <div class="wra-hint">You can retire from an RA from age 55.</div>
+      </div>
+      <div class="wra-field">
+        <div class="wra-row"><label for="wra-salary">Gross monthly income</label><div class="wra-num"><span>R</span><input id="wra-salary" type="number" inputmode="numeric" min="0" max="2000000" step="500" value="35000"></div></div>
+        <input type="range" data-for="wra-salary" min="0" max="250000" step="500" value="35000" aria-label="Gross monthly income slider">
+        <div class="wra-hint">Before tax. Used to estimate your tax saving and retirement income target.</div>
+      </div>
+      <div class="wra-field">
+        <div class="wra-row"><label for="wra-current">Current retirement savings</label><div class="wra-num"><span>R</span><input id="wra-current" type="number" inputmode="numeric" min="0" max="100000000" step="1000" value="50000"></div></div>
+        <input type="range" data-for="wra-current" min="0" max="5000000" step="5000" value="50000" aria-label="Current retirement savings slider">
+      </div>
+      <div class="wra-field">
+        <div class="wra-row"><span class="wra-label" id="wra-mode-lbl">Contribute as</span></div>
+        <div class="wra-seg" role="group" aria-labelledby="wra-mode-lbl">
+          <button type="button" data-mode="rand" aria-pressed="true">Rand amount</button>
+          <button type="button" data-mode="pct" aria-pressed="false">% of income</button>
+        </div>
+      </div>
+      <div class="wra-field" id="wra-f-rand">
+        <div class="wra-row"><label for="wra-contrib">Monthly contribution</label><div class="wra-num"><span>R</span><input id="wra-contrib" type="number" inputmode="numeric" min="0" max="500000" step="100" value="3500"></div></div>
+        <input type="range" data-for="wra-contrib" min="0" max="40000" step="100" value="3500" aria-label="Monthly contribution slider">
+      </div>
+      <div class="wra-field" id="wra-f-pct" hidden>
+        <div class="wra-row"><label for="wra-pct">Contribution</label><div class="wra-num"><input id="wra-pct" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="10"><span>% of income</span></div></div>
+        <input type="range" data-for="wra-pct" min="0" max="40" step="0.5" value="10" aria-label="Contribution percentage slider">
+      </div>
+      <div class="wra-field">
+        <div class="wra-row"><span class="wra-label" id="wra-strat-lbl">Investment strategy</span></div>
+        <div class="wra-seg" role="group" aria-labelledby="wra-strat-lbl" id="wra-strat"></div>
+        <div class="wra-hint" id="wra-strat-hint"></div>
+      </div>
+      <details class="wra-adv">
+        <summary>Advanced assumptions</summary>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-esc">Yearly contribution increase</label><div class="wra-num"><input id="wra-esc" type="number" inputmode="decimal" min="0" max="20" step="0.5" value="5"><span>%</span></div></div>
+          <div class="wra-hint">Assumes your income rises at this rate too.</div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-infl">Inflation</label><div class="wra-num"><input id="wra-infl" type="number" inputmode="decimal" min="0" max="15" step="0.1" value="5"><span>%</span></div></div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-fee">Your total annual fees</label><div class="wra-num"><input id="wra-fee" type="number" inputmode="decimal" min="0" max="5" step="0.05" value="1"><span>%</span></div></div>
+          <div class="wra-hint">All-in: advice, platform and fund management fees.</div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-fee2">Comparison fees</label><div class="wra-num"><input id="wra-fee2" type="number" inputmode="decimal" min="0" max="5" step="0.05" value="2.5"><span>%</span></div></div>
+          <div class="wra-hint">A typical higher-fee product, to show what fees cost you.</div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-other">Other retirement fund contributions</label><div class="wra-num"><span>R</span><input id="wra-other" type="number" inputmode="numeric" min="0" max="500000" step="100" value="0"></div></div>
+          <div class="wra-hint">Monthly pension or provident fund contributions (yours plus employer). These share the same tax-deduction limit.</div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-draw">Retirement drawdown rate</label><div class="wra-num"><input id="wra-draw" type="number" inputmode="decimal" min="2.5" max="17.5" step="0.5" value="5"><span>% a year</span></div></div>
+          <div class="wra-hint">Share of your savings withdrawn each year in retirement (living annuity limits: 2.5% to 17.5%). Around 4% to 5% is usually considered sustainable.</div>
+        </div>
+        <div class="wra-field">
+          <div class="wra-row"><label for="wra-target">Income goal in retirement</label><div class="wra-num"><input id="wra-target" type="number" inputmode="decimal" min="10" max="150" step="5" value="75"><span>% of income</span></div></div>
+        </div>
+      </details>
+    </form>
+    <!-- ================= RESULTS ================= -->
+    <div class="wra-results" aria-live="polite">
+      <div class="wra-hero">
+        <div class="wra-k">Projected savings at retirement (in today's money)</div>
+        <div class="wra-v" id="wra-o-fv">R0</div>
+        <div class="wra-s" id="wra-o-fvnom"></div>
+      </div>
+      <div class="wra-tiles">
+        <div class="wra-tile"><div class="wra-k">Monthly income in retirement</div><div class="wra-v" id="wra-o-inc">R0</div><div class="wra-s">In today's money, before tax</div></div>
+        <div class="wra-tile"><div class="wra-k">Your tax saving this year</div><div class="wra-v" id="wra-o-tax">R0</div><div class="wra-s" id="wra-o-taxm"></div></div>
+        <div class="wra-tile"><div class="wra-k">Fees could cost you</div><div class="wra-v" id="wra-o-fees">R0</div><div class="wra-s" id="wra-o-feess"></div></div>
+      </div>
+      <div class="wra-card">
+        <h3>Are you on track?</h3>
+        <p id="wra-o-track"></p>
+        <div class="wra-bar" aria-hidden="true"><i id="wra-o-bar" style="width:0"></i></div>
+        <p id="wra-o-need"></p>
+      </div>
+      <div class="wra-card">
+        <h3>How your savings could grow</h3>
+        <p>Projected value in today's money, at your fees compared with higher fees.</p>
+        <div class="wra-legend" aria-hidden="true">
+          <span><i style="background:var(--wra-s1)"></i><span id="wra-lg1">Your fees</span></span>
+          <span><i style="background:var(--wra-s2)"></i><span id="wra-lg2">Comparison fees</span></span>
+        </div>
+        <div class="wra-chart" id="wra-chart"><div class="wra-tip" id="wra-tip"></div></div>
+        <details class="wra-table">
+          <summary>Show year-by-year table (today's money)</summary>
+          <div class="wra-tbl-wrap"><table><thead><tr><th>Age</th><th>Total contributed</th><th>Value: your fees</th><th>Value: comparison</th></tr></thead><tbody id="wra-tbody"></tbody></table></div>
+        </details>
+      </div>
+      <div class="wra-card">
+        <h3>Your tax benefit</h3>
+        <p id="wra-o-taxd"></p>
+      </div>
+      <div class="wra-cta" id="wra-cta" hidden>
+        <p id="wra-cta-text"></p>
+        <a id="wra-cta-link" href="#"></a>
+      </div>
+    </div>
+  </div>
+  <p class="wra-disc" id="wra-disc"></p>
+<script>
+(function () {
+  'use strict';
+  /* ======================= CONFIG: edit these ======================= */
+  var CONFIG = {
+    theme: 'light',                       /* 'light', 'dark' or 'auto' (follows the visitor's device) */
+    accentColor: '',                      /* e.g. '#b0122b' to match your brand. Leave '' for default blue */
+    taxYearLabel: '2026/27',
+    /* SARS individual tax brackets for the tax year: [upper limit of band, rate] */
+    taxBrackets: [[245100, 0.18], [383100, 0.26], [530200, 0.31], [695800, 0.36], [887000, 0.39], [1878600, 0.41], [Infinity, 0.45]],
+    rebates: { primary: 17820, secondary: 9765, tertiary: 3249 },   /* secondary from 65, tertiary from 75 */
+    deductionPct: 0.275,                  /* RA deduction limit: 27.5% of taxable income ... */
+    deductionCap: 430000,                 /* ... up to this rand amount per year */
+    /* Expected returns ABOVE inflation, before fees */
+    strategies: [
+      { id: 'cons', name: 'Conservative', real: 0.03,  hint: 'Mostly bonds and cash. Lower ups and downs, lower expected growth (inflation + 3% a year before fees).' },
+      { id: 'mod',  name: 'Moderate',     real: 0.045, hint: 'A balanced mix of shares, bonds and property (inflation + 4.5% a year before fees).' },
+      { id: 'aggr', name: 'Aggressive',   real: 0.055, hint: 'Maximum share exposure allowed under Regulation 28. More ups and downs, higher expected growth (inflation + 5.5% a year before fees).' }
+    ],
+    defaultStrategy: 'aggr',
+    /* Optional call to action shown under the results (great for lead generation). Leave url '' to hide it. */
+    cta: { text: 'Want help choosing the right retirement annuity?', button: 'Speak to an adviser', url: '' },
+    disclaimer: 'This calculator gives illustrative estimates only and is not financial advice. Projections are based on the assumptions shown, which are not guaranteed. Actual investment returns, inflation, fees and tax rules will differ, and the value of investments can go down as well as up. Tax figures use the SARS individual tax tables for the year shown, assume your only income is the salary entered, and ignore medical tax credits and other deductions. Speak to a qualified financial adviser before making investment decisions.'
+  };
+  /* ================================================================== */
+  var root = document.getElementById('wra-calc');
+  if (!root) { return; }
+  root.setAttribute('data-theme-mode', CONFIG.theme);
+  if (CONFIG.accentColor) { root.style.setProperty('--wra-accent', CONFIG.accentColor); }
+  function $(id) { return document.getElementById(id); }
+  var state = { mode: 'rand', strategy: CONFIG.defaultStrategy };
+  /* ---------- formatting ---------- */
+  function fmtR(v) {
+    var n = Math.round(Math.abs(v));
+    var s = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (v < 0 ? '-R' : 'R') + s;
+  }
+  function fmtShort(v) {
+    var a = Math.abs(v);
+    if (a >= 1e6) { return 'R' + (v / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'm'; }
+    if (a >= 1e3) { return 'R' + Math.round(v / 1e3) + 'k'; }
+    return 'R' + Math.round(v);
+  }
+  function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d).replace(/\.0+$/, '') + '%'; }
+  function num(id, fallback) {
+    var el = $(id);
+    var v = parseFloat(el.value);
+    if (isNaN(v)) { return fallback; }
+    var mn = parseFloat(el.min), mx = parseFloat(el.max);
+    if (!isNaN(mn)) { v = Math.max(mn, v); }
+    if (!isNaN(mx)) { v = Math.min(mx, v); }
+    return v;
+  }
+  /* ---------- tax ---------- */
+  function incomeTax(taxable, age) {
+    if (taxable <= 0) { return 0; }
+    var tax = 0, lower = 0, i, b;
+    for (i = 0; i < CONFIG.taxBrackets.length; i++) {
+      b = CONFIG.taxBrackets[i];
+      if (taxable > lower) { tax += (Math.min(taxable, b[0]) - lower) * b[1]; }
+      lower = b[0];
+    }
+    var reb = CONFIG.rebates.primary;
+    if (age >= 65) { reb += CONFIG.rebates.secondary; }
+    if (age >= 75) { reb += CONFIG.rebates.tertiary; }
+    return Math.max(0, tax - reb);
+  }
+  function marginalRate(taxable) {
+    var i;
+    for (i = 0; i < CONFIG.taxBrackets.length; i++) {
+      if (taxable <= CONFIG.taxBrackets[i][0]) { return CONFIG.taxBrackets[i][1]; }
+    }
+    return CONFIG.taxBrackets[CONFIG.taxBrackets.length - 1][1];
+  }
+  /* ---------- projection (monthly compounding, contributions at month end) ---------- */
+  function project(p, fee, contrib, startBal) {
+    var nominal = (1 + p.infl) * (1 + p.real) - 1;
+    var net = nominal - fee;
+    var m = Math.pow(1 + net, 1 / 12) - 1;
+    var bal = startBal, c = contrib, paid = startBal, mdefl = Math.pow(1 + p.infl, 1 / 12), df = 1;
+    var years = p.ret - p.age, y, k, defl;
+    var rows = [{ age: p.age, bal: startBal, real: startBal, paid: paid }];
+    for (y = 1; y <= years; y++) {
+      for (k = 0; k < 12; k++) { bal = bal * (1 + m) + c; df *= mdefl; paid += c / df; }
+      c = c * (1 + p.esc);
+      defl = Math.pow(1 + p.infl, y);
+      rows.push({ age: p.age + y, bal: bal, real: bal / defl, paid: paid });
+    }
+    return rows;
+  }
+  function last(a) { return a[a.length - 1]; }
+  /* ---------- read inputs ---------- */
+  function readInputs() {
+    var age = Math.round(num('wra-age', 30));
+    var ret = Math.round(num('wra-ret', 65));
+    if (ret <= age) { ret = age + 1; }
+    var salary = num('wra-salary', 0);
+    var contrib = state.mode === 'rand' ? num('wra-contrib', 0) : salary * num('wra-pct', 0) / 100;
+    var strat = CONFIG.strategies[0], i;
+    for (i = 0; i < CONFIG.strategies.length; i++) { if (CONFIG.strategies[i].id === state.strategy) { strat = CONFIG.strategies[i]; } }
+    return {
+      age: age, ret: ret, salary: salary, contrib: contrib, current: num('wra-current', 0),
+      real: strat.real, strat: strat,
+      esc: num('wra-esc', 5) / 100, infl: num('wra-infl', 5) / 100,
+      fee: num('wra-fee', 1) / 100, fee2: num('wra-fee2', 2.5) / 100,
+      other: num('wra-other', 0), draw: num('wra-draw', 5) / 100, target: num('wra-target', 75) / 100
+    };
+  }
+  /* ---------- main calculation ---------- */
+  function calculate() {
+    var p = readInputs();
+    var years = p.ret - p.age;
+    var a = project(p, p.fee, p.contrib, p.current);
+    var b = project(p, p.fee2, p.contrib, p.current);
+    var fvReal = last(a).real, fvNom = last(a).bal;
+    var incReal = fvReal * p.draw / 12;
+    /* Income target: salary grows at the escalation rate; express in today's money */
+    var salaryAtRetReal = p.salary * Math.pow((1 + p.esc) / (1 + p.infl), years);
+    var targetInc = salaryAtRetReal * p.target;
+    var ratio = targetInc > 0 ? incReal / targetInc : 0;
+    /* Required contribution (results are linear in contribution) */
+    var base = last(project(p, p.fee, 0, p.current)).real;
+    var perRand = last(project(p, p.fee, 1, 0)).real;
+    var neededFv = p.draw > 0 ? targetInc * 12 / p.draw : 0;
+    var neededC = perRand > 0 ? Math.max(0, (neededFv - base) / perRand) : 0;
+    /* Tax */
+    var annualIncome = p.salary * 12;
+    var annualRA = p.contrib * 12, annualOther = p.other * 12;
+    var limit = Math.min(CONFIG.deductionPct * annualIncome, CONFIG.deductionCap);
+    var dedOther = Math.min(annualOther, limit);
+    var dedTotal = Math.min(annualOther + annualRA, limit);
+    var taxSave = incomeTax(annualIncome - dedOther, p.age) - incomeTax(annualIncome - dedTotal, p.age);
+    var deductibleRA = dedTotal - dedOther;
+    var excess = Math.max(0, annualRA - deductibleRA);
+    /* ---------- output ---------- */
+    $('wra-o-fv').textContent = fmtR(fvReal);
+    $('wra-o-fvnom').textContent = 'About ' + fmtR(fvNom) + ' in future money at age ' + p.ret + ', after ' + years + (years === 1 ? ' year' : ' years') + ' of saving.';
+    $('wra-o-inc').textContent = fmtR(incReal) + ' pm';
+    $('wra-o-tax').textContent = fmtR(taxSave);
+    $('wra-o-taxm').textContent = taxSave > 0 ? 'About ' + fmtR(taxSave / 12) + ' a month' : 'Enter your income to estimate';
+    var feeCost = fvReal - last(b).real;
+    $('wra-o-fees').textContent = fmtR(Math.abs(feeCost));
+    $('wra-o-feess').textContent = feeCost >= 0 ? 'Less savings at ' + pct(p.fee2, 2) + ' fees vs ' + pct(p.fee, 2) : 'Extra cost of your fees vs ' + pct(p.fee2, 2);
+    $('wra-lg1').textContent = 'Your fees (' + pct(p.fee, 2) + ')';
+    $('wra-lg2').textContent = 'Comparison fees (' + pct(p.fee2, 2) + ')';
+    /* On track */
+    var bar = Math.max(0, Math.min(1, ratio));
+    $('wra-o-bar').style.width = (bar * 100).toFixed(1) + '%';
+    var track = $('wra-o-track');
+    track.textContent = '';
+    if (p.salary <= 0) {
+      track.textContent = 'Enter your monthly income to compare your projected retirement income with your goal.';
+      $('wra-o-need').textContent = '';
+    } else {
+      var st = document.createElement('span');
+      st.className = 'wra-status ' + (ratio >= 1 ? 'ok' : 'low');
+      st.textContent = ratio >= 1 ? 'On track. ' : 'Shortfall. ';
+      track.appendChild(st);
+      track.appendChild(document.createTextNode('Your projected income of ' + fmtR(incReal) + ' a month is ' + Math.round(ratio * 100) + '% of your goal of ' + fmtR(targetInc) + ' a month (' + Math.round(p.target * 100) + '% of your income at retirement, in today\'s money).'));
+      var need = $('wra-o-need');
+      if (ratio >= 1) {
+        need.textContent = 'Keep it up. You could reach your goal with a monthly contribution of about ' + fmtR(neededC) + ' (' + (p.salary > 0 ? pct(neededC / p.salary) : '') + ' of your income).';
+      } else {
+        need.textContent = 'To reach your goal, you would need to contribute about ' + fmtR(neededC) + ' a month (' + pct(neededC / p.salary) + ' of your income), or ' + fmtR(neededC - p.contrib) + ' more than now. Retiring later or reducing fees also helps.';
+      }
+    }
+    /* Tax detail */
+    var taxd = $('wra-o-taxd');
+    if (annualIncome <= 0) {
+      taxd.textContent = 'Enter your income to see how much tax your RA contributions could save you.';
+    } else {
+      var mr = marginalRate(annualIncome - dedOther);
+      var netCost = p.contrib - taxSave / 12;
+      var t = 'In the ' + CONFIG.taxYearLabel + ' tax year you can deduct retirement fund contributions of up to ' + pct(CONFIG.deductionPct) + ' of your taxable income, capped at ' + fmtR(CONFIG.deductionCap) + ' a year. Your limit is ' + fmtR(limit) + '. ';
+      t += 'Your RA contribution of ' + fmtR(annualRA) + ' a year could reduce your tax by about ' + fmtR(taxSave) + ' (your marginal tax rate is ' + pct(mr, 0) + '), so each ' + fmtR(p.contrib) + ' you invest effectively costs you about ' + fmtR(Math.max(0, netCost)) + ' a month. ';
+      if (excess > 0) { t += 'About ' + fmtR(excess) + ' a year is above your limit. It is not deductible this year but carries forward to future years, and can reduce tax on your retirement lump sum or annuity income.'; }
+      else if (annualRA > 0) { t += 'You have about ' + fmtR(Math.max(0, limit - dedTotal)) + ' of unused deduction room this year.'; }
+      taxd.textContent = t;
+    }
+    renderTable(a, b);
+    drawChart(a, b);
+  }
+  /* ---------- table ---------- */
+  function renderTable(a, b) {
+    var tb = $('wra-tbody'), i, tr, cells, j, td;
+    while (tb.firstChild) { tb.removeChild(tb.firstChild); }
+    for (i = 0; i < a.length; i++) {
+      tr = document.createElement('tr');
+      cells = [String(a[i].age), fmtR(a[i].paid), fmtR(a[i].real), fmtR(b[i].real)];
+      for (j = 0; j < cells.length; j++) { td = document.createElement('td'); td.textContent = cells[j]; tr.appendChild(td); }
+      tb.appendChild(tr);
+    }
+  }
+  /* ---------- chart (inline SVG, no libraries) ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var chartData = null;
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name), k;
+    for (k in attrs) { if (Object.prototype.hasOwnProperty.call(attrs, k)) { e.setAttribute(k, attrs[k]); } }
+    if (parent) { parent.appendChild(e); }
+    return e;
+  }
+  function niceStep(v) {
+    if (v <= 0) { return 1; }
+    var e = Math.pow(10, Math.floor(Math.log(v) / Math.LN10)), f = v / e, n;
+    if (f <= 1) { n = 1; } else if (f <= 2) { n = 2; } else if (f <= 5) { n = 5; } else { n = 10; }
+    return n * e;
+  }
+  function drawChart(a, b) {
+    var box = $('wra-chart');
+    var old = box.querySelector('svg');
+    if (old) { box.removeChild(old); }
+    var W = Math.max(280, box.clientWidth || 600), H = W < 480 ? 220 : 280;
+    var pad = { l: 52, r: 14, t: 12, b: 28 };
+    var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+    var maxV = 0, i;
+    for (i = 0; i < a.length; i++) { maxV = Math.max(maxV, a[i].real, b[i].real); }
+    var tick = niceStep(maxV / 4), ticks = Math.max(1, Math.ceil(maxV * 1.02 / tick)), yMax = tick * ticks;
+    var n = a.length - 1;
+    function x(i2) { return pad.l + (n === 0 ? 0 : iw * i2 / n); }
+    function y(v) { return pad.t + ih - ih * v / yMax; }
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': 'Line chart of projected retirement savings by age, in today\'s money' });
+    var g = el('g', {}, svg), t, v;
+    for (i = 0; i <= ticks; i++) {
+      v = tick * i;
+      el('line', { x1: pad.l, x2: W - pad.r, y1: y(v), y2: y(v), stroke: 'var(--wra-grid)', 'stroke-width': 1 }, g);
+      t = el('text', { x: pad.l - 8, y: y(v) + 4, 'text-anchor': 'end' }, g);
+      t.textContent = fmtShort(v);
+    }
+    var step = Math.max(1, Math.ceil(n / (W < 480 ? 5 : 8)));
+    for (i = 0; i <= n; i += step) {
+      t = el('text', { x: x(i), y: H - 8, 'text-anchor': 'middle' }, g);
+      t.textContent = a[i].age;
+    }
+    if (n % step !== 0) { t = el('text', { x: x(n), y: H - 8, 'text-anchor': 'middle' }, g); t.textContent = a[n].age; }
+    function path(arr) {
+      var d = '', j;
+      for (j = 0; j < arr.length; j++) { d += (j === 0 ? 'M' : 'L') + x(j).toFixed(1) + ' ' + y(arr[j].real).toFixed(1); }
+      return d;
+    }
+    var pa = path(a);
+    el('path', { d: pa + 'L' + x(n) + ' ' + y(0) + 'L' + x(0) + ' ' + y(0) + 'Z', fill: 'var(--wra-s1)', 'fill-opacity': 0.12, stroke: 'none' }, g);
+    el('path', { d: path(b), fill: 'none', stroke: 'var(--wra-s2)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'stroke-dasharray': '5 4' }, g);
+    el('path', { d: pa, fill: 'none', stroke: 'var(--wra-s1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
+    el('line', { x1: pad.l, x2: W - pad.r, y1: y(0), y2: y(0), stroke: 'var(--wra-muted)', 'stroke-width': 1 }, g);
+    var hover = el('g', { opacity: 0 }, svg);
+    var cross = el('line', { y1: pad.t, y2: pad.t + ih, stroke: 'var(--wra-muted)', 'stroke-width': 1 }, hover);
+    var d1 = el('circle', { r: 5, fill: 'var(--wra-s1)', stroke: 'var(--wra-bg)', 'stroke-width': 2 }, hover);
+    var d2 = el('circle', { r: 5, fill: 'var(--wra-s2)', stroke: 'var(--wra-bg)', 'stroke-width': 2 }, hover);
+    var hit = el('rect', { x: pad.l, y: 0, width: iw, height: H, fill: 'transparent' }, svg);
+    box.insertBefore(svg, box.firstChild);
+    chartData = { a: a, b: b, x: x, y: y, n: n, W: W, pad: pad, iw: iw, hover: hover, cross: cross, d1: d1, d2: d2 };
+    function move(ev) {
+      var r = svg.getBoundingClientRect();
+      var scale = W / r.width;
+      var cx = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) * scale;
+      var idx = Math.round((cx - pad.l) / iw * n);
+      idx = Math.max(0, Math.min(n, idx));
+      showTip(idx, r.width / W);
+    }
+    hit.addEventListener('mousemove', move);
+    hit.addEventListener('touchstart', move, { passive: true });
+    hit.addEventListener('touchmove', move, { passive: true });
+    hit.addEventListener('mouseleave', hideTip);
+    hit.addEventListener('touchend', hideTip);
+  }
+  function showTip(idx, s) {
+    var c = chartData, tip = $('wra-tip');
+    var px = c.x(idx);
+    c.cross.setAttribute('x1', px); c.cross.setAttribute('x2', px);
+    c.d1.setAttribute('cx', px); c.d1.setAttribute('cy', c.y(c.a[idx].real));
+    c.d2.setAttribute('cx', px); c.d2.setAttribute('cy', c.y(c.b[idx].real));
+    c.hover.setAttribute('opacity', 1);
+    tip.textContent = '';
+    var h = document.createElement('b'); h.textContent = 'Age ' + c.a[idx].age; tip.appendChild(h);
+    function row(color, label, val) {
+      var d = document.createElement('div'); d.className = 'wra-tr';
+      var l = document.createElement('span'); var i = document.createElement('i'); i.style.background = color; l.appendChild(i); l.appendChild(document.createTextNode(label));
+      var e = document.createElement('em'); e.textContent = fmtR(val);
+      d.appendChild(l); d.appendChild(e); tip.appendChild(d);
+    }
+    row('var(--wra-s1)', 'Your fees', c.a[idx].real);
+    row('var(--wra-s2)', 'Comparison', c.b[idx].real);
+    row('var(--wra-muted)', 'Contributed', c.a[idx].paid);
+    tip.style.opacity = 1;
+    var left = px * s + 14, tw = tip.offsetWidth, boxW = c.W * s;
+    if (left + tw > boxW) { left = px * s - tw - 14; }
+    tip.style.left = Math.max(0, left) + 'px';
+    tip.style.top = '8px';
+  }
+  function hideTip() {
+    if (chartData) { chartData.hover.setAttribute('opacity', 0); }
+    $('wra-tip').style.opacity = 0;
+    $('wra-tip').style.left = '0px';
+  }
+  /* ---------- wiring ---------- */
+  var stratBox = $('wra-strat');
+  CONFIG.strategies.forEach(function (s) {
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.textContent = s.name; btn.setAttribute('data-strat', s.id);
+    btn.setAttribute('aria-pressed', s.id === state.strategy ? 'true' : 'false');
+    btn.addEventListener('click', function () {
+      state.strategy = s.id;
+      Array.prototype.forEach.call(stratBox.children, function (c) { c.setAttribute('aria-pressed', c === btn ? 'true' : 'false'); });
+      $('wra-strat-hint').textContent = s.hint;
+      calculate();
+    });
+    stratBox.appendChild(btn);
+    if (s.id === state.strategy) { $('wra-strat-hint').textContent = s.hint; }
+  });
+  Array.prototype.forEach.call(root.querySelectorAll('[data-mode]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var salary = num('wra-salary', 0);
+      if (btn.getAttribute('data-mode') === state.mode) { return; }
+      if (state.mode === 'rand') {
+        if (salary > 0) { setVal('wra-pct', Math.round(num('wra-contrib', 0) / salary * 1000) / 10); }
+      } else {
+        setVal('wra-contrib', Math.round(salary * num('wra-pct', 0) / 100 / 50) * 50);
+      }
+      state.mode = btn.getAttribute('data-mode');
+      Array.prototype.forEach.call(root.querySelectorAll('[data-mode]'), function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      $('wra-f-rand').hidden = state.mode !== 'rand';
+      $('wra-f-pct').hidden = state.mode !== 'pct';
+      calculate();
+    });
+  });
+  function setVal(id, v) {
+    $(id).value = v;
+    var r = root.querySelector('input[type="range"][data-for="' + id + '"]');
+    if (r) { r.value = v; }
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('input[type="range"][data-for]'), function (r) {
+    var target = $(r.getAttribute('data-for'));
+    r.addEventListener('input', function () { target.value = r.value; calculate(); });
+    target.addEventListener('input', function () { r.value = target.value; calculate(); });
+  });
+  Array.prototype.forEach.call(root.querySelectorAll('.wra-adv input'), function (inp) {
+    inp.addEventListener('input', calculate);
+  });
+  /* tidy out-of-range typed values when the visitor leaves a field */
+  Array.prototype.forEach.call(root.querySelectorAll('.wra-num input'), function (inp) {
+    inp.addEventListener('change', function () { setVal(inp.id, num(inp.id, parseFloat(inp.defaultValue))); calculate(); });
+  });
+  if (CONFIG.cta.url) {
+    $('wra-cta').hidden = false;
+    $('wra-cta-text').textContent = CONFIG.cta.text;
+    $('wra-cta-link').textContent = CONFIG.cta.button;
+    $('wra-cta-link').href = CONFIG.cta.url;
+  }
+  $('wra-disc').textContent = CONFIG.disclaimer;
+  var lastW = 0;
+  function onResize() {
+    var w = $('wra-chart').clientWidth;
+    if (Math.abs(w - lastW) > 4) { lastW = w; calculate(); }
+  }
+  if (window.ResizeObserver) { new ResizeObserver(onResize).observe($('wra-chart')); }
+  else { window.addEventListener('resize', onResize); }
+  calculate();
+})();
+</script>
+</div>

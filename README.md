@@ -7,12 +7,30 @@ Self-contained retirement calculators for WordPress. They need no plugins, exter
 
 Both can go on the same page.
 
-## Two-pot calculator
+## Two-pot withdrawal calculator
 
-- Splits a fund balance into the savings, vested and retirement components. It estimates the split from a total balance (contributions since 1 September 2024 split 1/3 : 2/3, plus the 10% seed capped at R30 000, less earlier withdrawals), or takes the three balances from the member's statement
-- Tax on a savings withdrawal at the member's marginal rate (SARS 2026/27 tables), fund admin fee and cash received, with checks for the R2 000 minimum and the available savings balance
-- What the withdrawal does to the retirement pot, once or every year: the projected pot by component with and without the withdrawal, monthly retirement income lost, and what each R1 of cash taken now costs at retirement (all in today's money)
-- The two-pot rules (seed, cap, split, minimum withdrawal) and tax tables can be edited in `CONFIG`
+Built to the pensionfund.co.za build spec (page `/two-pot-withdrawal-calculator/`).
+
+- **Tax and net payout:** tax on a savings withdrawal using the SARS directive method, `tax(income + withdrawal) - tax(income)`, with no rebates. Net payout after the fund fee and any SARS debt, the effective rate, a note when the withdrawal moves the top of the income into a higher bracket, and a payout bar
+- **Cost at retirement:** the gross withdrawal compounded annually to retirement, in future rand and in today's money
+- **Contribution split:** one third to savings and two thirds to retirement, monthly and yearly
+- Validation: R2 000 minimum, withdrawal no more than the savings balance, no negative numbers or text, whole-year ages, retirement age greater than current age
+- Calculates when the visitor presses Calculate or Enter. Inputs never leave the browser
+- Tax brackets, the tax year label and the "Last updated" date are in `CONFIG`
+
+The H1 is part of the snippet. If your theme also prints the page title as an H1, hide the theme title on this page so there is only one H1.
+
+### Testing
+
+`tests/two-pot-calculator.test.js` runs every test case in the build spec, plus validation and page checks, against the real page in a browser:
+
+```
+npm install playwright
+npx playwright install chromium
+node tests/two-pot-calculator.test.js
+```
+
+Re-run it after updating the tax brackets.
 
 ## Retirement annuity calculator
 

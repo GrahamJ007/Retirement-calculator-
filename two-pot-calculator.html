@@ -1,0 +1,573 @@
+<!-- ============================================================
+  Two-Pot Retirement Calculator (South Africa)
+  Self-contained: no external scripts, fonts, images or services.
+  Paste this whole file into a WordPress "Custom HTML" block,
+  Divi "Code" module or Elementor "HTML" widget.
+  Settings you may want to change live in the CONFIG object
+  near the top of the <script> section below.
+============================================================= -->
+<div id="tpc-calc" class="tpc" data-theme-mode="light">
+<style>
+#tpc-calc{--tpc-accent:#1c5cab;--tpc-accent-ink:#ffffff;--tpc-bg:#ffffff;--tpc-panel:#f6f7f9;--tpc-border:#dfe2e7;--tpc-text:#14161a;--tpc-text-2:#4f545c;--tpc-muted:#7a8089;--tpc-grid:#e6e8ec;--tpc-ret:#2a78d6;--tpc-sav:#eb6834;--tpc-ves:#1baf7a;--tpc-bad:#b42318;--tpc-warn:#a35a00;--tpc-good:#0f7a3d;color-scheme:light;font-family:inherit;color:var(--tpc-text);background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:14px;padding:24px;max-width:1100px;margin:0 auto;box-sizing:border-box;line-height:1.45;font-size:16px}
+#tpc-calc[data-theme-mode="dark"]{--tpc-accent:#5598e7;--tpc-accent-ink:#0b0b0b;--tpc-bg:#17181a;--tpc-panel:#202225;--tpc-border:#33363b;--tpc-text:#f0efec;--tpc-text-2:#c3c2b7;--tpc-muted:#9a9a92;--tpc-grid:#2d3034;--tpc-ret:#3987e5;--tpc-sav:#d95926;--tpc-ves:#199e70;--tpc-bad:#f97066;--tpc-warn:#e0a24a;--tpc-good:#4cc27e;color-scheme:dark}
+@media (prefers-color-scheme:dark){#tpc-calc[data-theme-mode="auto"]{--tpc-accent:#5598e7;--tpc-accent-ink:#0b0b0b;--tpc-bg:#17181a;--tpc-panel:#202225;--tpc-border:#33363b;--tpc-text:#f0efec;--tpc-text-2:#c3c2b7;--tpc-muted:#9a9a92;--tpc-grid:#2d3034;--tpc-ret:#3987e5;--tpc-sav:#d95926;--tpc-ves:#199e70;--tpc-bad:#f97066;--tpc-warn:#e0a24a;--tpc-good:#4cc27e;color-scheme:dark}}
+#tpc-calc [hidden]{display:none!important}
+#tpc-calc *,#tpc-calc *::before,#tpc-calc *::after{box-sizing:border-box}
+#tpc-calc h2,#tpc-calc h3,#tpc-calc h4,#tpc-calc p{margin:0;padding:0;color:inherit;font-family:inherit;letter-spacing:normal;text-transform:none}
+#tpc-calc .tpc-head{margin-bottom:20px}
+#tpc-calc .tpc-head h2{font-size:1.6em;line-height:1.2;font-weight:700}
+#tpc-calc .tpc-head p{color:var(--tpc-text-2);margin-top:6px;font-size:.95em}
+#tpc-calc .tpc-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start}
+#tpc-calc .tpc-inputs{background:var(--tpc-panel);border:1px solid var(--tpc-border);border-radius:12px;padding:18px}
+#tpc-calc .tpc-sec{font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tpc-muted);margin:22px 0 12px;padding-top:16px;border-top:1px solid var(--tpc-border)}
+#tpc-calc .tpc-sec:first-child{margin-top:0;padding-top:0;border-top:0}
+#tpc-calc .tpc-field{margin-bottom:16px}
+#tpc-calc .tpc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+#tpc-calc label,#tpc-calc .tpc-label{font-size:.9em;font-weight:600;color:var(--tpc-text);margin:0}
+#tpc-calc .tpc-hint{font-size:.78em;color:var(--tpc-muted);margin-top:4px}
+#tpc-calc .tpc-num{display:flex;align-items:center;background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:8px;padding:0 8px;min-width:120px;max-width:170px}
+#tpc-calc .tpc-num:focus-within{border-color:var(--tpc-accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--tpc-accent) 25%,transparent)}
+#tpc-calc .tpc-num span{color:var(--tpc-muted);font-size:.85em;white-space:nowrap}
+#tpc-calc .tpc-num input{border:0;outline:0;background:transparent;color:var(--tpc-text);font:inherit;font-size:.95em;width:100%;padding:7px 4px;margin:0;box-shadow:none;text-align:right;min-height:0;height:auto;-moz-appearance:textfield;appearance:textfield}
+#tpc-calc .tpc-num input::-webkit-outer-spin-button,#tpc-calc .tpc-num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#tpc-calc input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--tpc-border);outline:0;margin:6px 0 0;padding:0;border:0;box-shadow:none}
+#tpc-calc input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--tpc-accent);border:3px solid var(--tpc-bg);box-shadow:0 0 0 1px var(--tpc-accent);cursor:pointer}
+#tpc-calc input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--tpc-accent);border:3px solid var(--tpc-bg);box-shadow:0 0 0 1px var(--tpc-accent);cursor:pointer}
+#tpc-calc .tpc-seg{display:flex;background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:8px;padding:3px;gap:3px;margin-bottom:14px}
+#tpc-calc .tpc-seg button{flex:1;min-width:0;border:0;background:transparent;color:var(--tpc-text-2);font:inherit;font-size:.82em;font-weight:600;padding:7px 6px;border-radius:6px;cursor:pointer;margin:0;line-height:1.2;text-transform:none;letter-spacing:normal;box-shadow:none;min-height:0}
+#tpc-calc .tpc-seg button[aria-pressed="true"]{background:var(--tpc-accent);color:var(--tpc-accent-ink)}
+#tpc-calc .tpc-seg button:focus-visible{outline:2px solid var(--tpc-accent);outline-offset:1px}
+#tpc-calc details.tpc-adv{border-top:1px solid var(--tpc-border);margin-top:18px;padding-top:12px}
+#tpc-calc details.tpc-adv summary{cursor:pointer;font-weight:600;font-size:.9em;color:var(--tpc-accent);list-style:revert}
+#tpc-calc details.tpc-adv[open] summary{margin-bottom:14px}
+#tpc-calc .tpc-results{display:flex;flex-direction:column;gap:16px;min-width:0}
+#tpc-calc .tpc-card{background:var(--tpc-panel);border:1px solid var(--tpc-border);border-radius:12px;padding:16px}
+#tpc-calc .tpc-card h3{font-size:1.05em;font-weight:700;margin-bottom:4px}
+#tpc-calc .tpc-card>p{font-size:.88em;color:var(--tpc-text-2)}
+#tpc-calc .tpc-pots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+#tpc-calc .tpc-pot{background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:10px;padding:12px;border-top:4px solid var(--c)}
+#tpc-calc .tpc-pot .tpc-k{font-size:.8em;font-weight:700;color:var(--tpc-text)}
+#tpc-calc .tpc-pot .tpc-v{font-size:1.25em;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;word-break:break-word}
+#tpc-calc .tpc-pot .tpc-s{font-size:.74em;color:var(--tpc-muted);margin-top:4px}
+#tpc-calc .tpc-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8em;color:var(--tpc-text-2);margin:12px 0 4px}
+#tpc-calc .tpc-legend span{display:inline-flex;align-items:center;gap:6px}
+#tpc-calc .tpc-legend i{display:inline-block;width:12px;height:12px;border-radius:3px}
+#tpc-calc .tpc-chart{position:relative;width:100%;margin-top:8px}
+#tpc-calc .tpc-chart svg{display:block;width:100%;height:auto}
+#tpc-calc .tpc-chart text{font-family:inherit;font-size:12px;fill:var(--tpc-text-2)}
+#tpc-calc .tpc-tip{position:absolute;left:0;top:0;pointer-events:none;background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:8px;padding:7px 10px;font-size:.78em;box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5;color:var(--tpc-text)}
+#tpc-calc .tpc-tip b{display:block}
+#tpc-calc .tpc-lines{margin-top:12px;border-top:1px solid var(--tpc-border)}
+#tpc-calc .tpc-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--tpc-border);font-size:.9em}
+#tpc-calc .tpc-line span:last-child{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+#tpc-calc .tpc-line.tpc-neg span:last-child{color:var(--tpc-bad)}
+#tpc-calc .tpc-line.tpc-total{border-bottom:0;font-size:1.05em}
+#tpc-calc .tpc-line.tpc-total span{font-weight:800}
+#tpc-calc .tpc-big{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+#tpc-calc .tpc-big>div{background:var(--tpc-bg);border:1px solid var(--tpc-border);border-radius:10px;padding:12px}
+#tpc-calc .tpc-big .tpc-k{font-size:.78em;color:var(--tpc-text-2);font-weight:600}
+#tpc-calc .tpc-big .tpc-v{font-size:1.35em;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;word-break:break-word}
+#tpc-calc .tpc-big .tpc-v.tpc-bad{color:var(--tpc-bad)}
+#tpc-calc .tpc-alert{border-radius:10px;padding:10px 12px;font-size:.86em;margin-top:12px;border:1px solid var(--tpc-warn);color:var(--tpc-text);background:color-mix(in srgb,var(--tpc-warn) 10%,transparent)}
+#tpc-calc .tpc-alert strong{color:var(--tpc-warn)}
+#tpc-calc .tpc-callout{background:var(--tpc-accent);color:var(--tpc-accent-ink);border-radius:12px;padding:18px}
+#tpc-calc .tpc-callout .tpc-k{font-size:.85em;opacity:.92}
+#tpc-calc .tpc-callout .tpc-v{font-size:2em;font-weight:800;line-height:1.15;margin:4px 0;font-variant-numeric:tabular-nums}
+#tpc-calc .tpc-callout .tpc-s{font-size:.86em;opacity:.92}
+#tpc-calc details.tpc-table summary{cursor:pointer;font-size:.85em;font-weight:600;color:var(--tpc-accent);margin-top:10px}
+#tpc-calc .tpc-tbl-wrap{overflow:auto;margin-top:10px;border:1px solid var(--tpc-border);border-radius:8px}
+#tpc-calc table{width:100%;border-collapse:collapse;font-size:.8em;margin:0;border:0}
+#tpc-calc th,#tpc-calc td{padding:6px 10px;text-align:right;border:0;border-bottom:1px solid var(--tpc-border);background:transparent;color:var(--tpc-text);font-variant-numeric:tabular-nums}
+#tpc-calc th{background:var(--tpc-panel);font-weight:700;color:var(--tpc-text-2)}
+#tpc-calc th:first-child,#tpc-calc td:first-child{text-align:left}
+#tpc-calc .tpc-info{font-size:.84em;color:var(--tpc-text-2)}
+#tpc-calc .tpc-info ul{margin:8px 0 0 18px;padding:0}
+#tpc-calc .tpc-info li{margin:0 0 6px;padding:0}
+#tpc-calc .tpc-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--tpc-panel);border:1px dashed var(--tpc-accent);border-radius:12px;padding:16px}
+#tpc-calc .tpc-cta p{font-size:.92em;font-weight:600;flex:1 1 220px}
+#tpc-calc .tpc-cta a{display:inline-block;background:var(--tpc-accent);color:var(--tpc-accent-ink);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:8px;font-size:.92em}
+#tpc-calc .tpc-disc{font-size:.72em;color:var(--tpc-muted);margin-top:20px;border-top:1px solid var(--tpc-border);padding-top:12px}
+@media (max-width:860px){#tpc-calc .tpc-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){#tpc-calc{padding:16px;border-radius:10px}#tpc-calc .tpc-pots{grid-template-columns:minmax(0,1fr)}#tpc-calc .tpc-big{grid-template-columns:minmax(0,1fr)}#tpc-calc .tpc-num{min-width:105px}#tpc-calc .tpc-seg button{font-size:.74em;padding:7px 2px}#tpc-calc .tpc-callout .tpc-v{font-size:1.7em}}
+</style>
+  <div class="tpc-head">
+    <h2>Two-Pot Retirement Calculator</h2>
+    <p>See how your retirement savings split into the savings, vested and retirement components, how much tax you would pay on a savings withdrawal, and what that withdrawal could cost you at retirement.</p>
+  </div>
+  <div class="tpc-grid">
+    <!-- ================= INPUTS ================= -->
+    <form class="tpc-inputs" onsubmit="return false" novalidate>
+      <h4 class="tpc-sec">1. Your retirement fund</h4>
+      <div class="tpc-seg" role="group" aria-label="How to enter your balance">
+        <button type="button" data-bal="est" aria-pressed="true">Split my total balance</button>
+        <button type="button" data-bal="known" aria-pressed="false">I know my pot balances</button>
+      </div>
+      <div id="tpc-f-est">
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-total">Total fund value today</label><div class="tpc-num"><span>R</span><input id="tpc-total" type="number" inputmode="numeric" min="0" max="100000000" step="1000" value="650000"></div></div>
+          <input type="range" data-for="tpc-total" min="0" max="5000000" step="5000" value="650000" aria-label="Total fund value slider">
+          <div class="tpc-hint">From your latest benefit statement. Include all your pension, provident or retirement annuity savings in this fund.</div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-prior">Savings withdrawals already taken</label><div class="tpc-num"><span>R</span><input id="tpc-prior" type="number" inputmode="numeric" min="0" max="10000000" step="500" value="0"></div></div>
+          <div class="tpc-hint">Total of any earlier two-pot withdrawals, before tax.</div>
+        </div>
+      </div>
+      <div id="tpc-f-known" hidden>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-ksav">Savings component</label><div class="tpc-num"><span>R</span><input id="tpc-ksav" type="number" inputmode="numeric" min="0" max="100000000" step="500" value="40000"></div></div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-kves">Vested component</label><div class="tpc-num"><span>R</span><input id="tpc-kves" type="number" inputmode="numeric" min="0" max="100000000" step="1000" value="530000"></div></div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-kret">Retirement component</label><div class="tpc-num"><span>R</span><input id="tpc-kret" type="number" inputmode="numeric" min="0" max="100000000" step="1000" value="80000"></div></div>
+          <div class="tpc-hint">Your fund shows these three balances on your statement or member portal.</div>
+        </div>
+      </div>
+      <div class="tpc-field">
+        <div class="tpc-row"><label for="tpc-contrib">Monthly contribution</label><div class="tpc-num"><span>R</span><input id="tpc-contrib" type="number" inputmode="numeric" min="0" max="500000" step="100" value="4000"></div></div>
+        <input type="range" data-for="tpc-contrib" min="0" max="40000" step="100" value="4000" aria-label="Monthly contribution slider">
+        <div class="tpc-hint">Total going into the fund each month (yours plus your employer's). A third goes to savings, two-thirds to retirement.</div>
+      </div>
+      <h4 class="tpc-sec">2. About you</h4>
+      <div class="tpc-field">
+        <div class="tpc-row"><label for="tpc-age">Your current age</label><div class="tpc-num"><input id="tpc-age" type="number" inputmode="numeric" min="18" max="75" step="1" value="35"><span>years</span></div></div>
+        <input type="range" data-for="tpc-age" min="18" max="75" step="1" value="35" aria-label="Current age slider">
+      </div>
+      <div class="tpc-field">
+        <div class="tpc-row"><label for="tpc-ret">Retirement age</label><div class="tpc-num"><input id="tpc-ret" type="number" inputmode="numeric" min="55" max="75" step="1" value="65"><span>years</span></div></div>
+        <input type="range" data-for="tpc-ret" min="55" max="75" step="1" value="65" aria-label="Retirement age slider">
+      </div>
+      <div class="tpc-field">
+        <div class="tpc-row"><label for="tpc-salary">Gross monthly income</label><div class="tpc-num"><span>R</span><input id="tpc-salary" type="number" inputmode="numeric" min="0" max="2000000" step="500" value="30000"></div></div>
+        <input type="range" data-for="tpc-salary" min="0" max="250000" step="500" value="30000" aria-label="Gross monthly income slider">
+        <div class="tpc-hint">Taxable income before the withdrawal. Sets your marginal tax rate.</div>
+      </div>
+      <h4 class="tpc-sec">3. Your withdrawal</h4>
+      <div class="tpc-field">
+        <div class="tpc-row"><label for="tpc-wd">Amount to withdraw</label><div class="tpc-num"><span>R</span><input id="tpc-wd" type="number" inputmode="numeric" min="0" max="100000000" step="500" value="20000"></div></div>
+        <input type="range" id="tpc-wd-range" data-for="tpc-wd" min="0" max="50000" step="500" value="20000" aria-label="Withdrawal amount slider">
+        <div class="tpc-hint" id="tpc-wd-hint"></div>
+      </div>
+      <div class="tpc-field">
+        <div class="tpc-row"><span class="tpc-label" id="tpc-freq-lbl">How often</span></div>
+        <div class="tpc-seg" role="group" aria-labelledby="tpc-freq-lbl" style="margin-bottom:0">
+          <button type="button" data-freq="once" aria-pressed="true">Once, this year</button>
+          <button type="button" data-freq="yearly" aria-pressed="false">Every year</button>
+        </div>
+      </div>
+      <details class="tpc-adv">
+        <summary>Advanced assumptions</summary>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-growth">Investment growth</label><div class="tpc-num"><input id="tpc-growth" type="number" inputmode="decimal" min="0" max="20" step="0.25" value="10"><span>% a year</span></div></div>
+          <div class="tpc-hint">After fees.</div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-infl">Inflation</label><div class="tpc-num"><input id="tpc-infl" type="number" inputmode="decimal" min="0" max="15" step="0.1" value="5"><span>%</span></div></div>
+          <div class="tpc-hint">Contributions are assumed to rise with inflation. Results are shown in today's money.</div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-fee">Fund admin fee per withdrawal</label><div class="tpc-num"><span>R</span><input id="tpc-fee" type="number" inputmode="numeric" min="0" max="5000" step="10" value="0"></div></div>
+          <div class="tpc-hint">Many funds charge a fee for each withdrawal. Check with yours.</div>
+        </div>
+        <div class="tpc-field">
+          <div class="tpc-row"><label for="tpc-draw">Retirement drawdown rate</label><div class="tpc-num"><input id="tpc-draw" type="number" inputmode="decimal" min="2.5" max="17.5" step="0.5" value="5"><span>% a year</span></div></div>
+          <div class="tpc-hint">Used to turn the lost savings into lost monthly income in retirement.</div>
+        </div>
+      </details>
+    </form>
+    <!-- ================= RESULTS ================= -->
+    <div class="tpc-results" aria-live="polite">
+      <div class="tpc-card">
+        <h3>Your three pots today</h3>
+        <p id="tpc-o-splitnote"></p>
+        <div class="tpc-legend" aria-hidden="true">
+          <span><i style="background:var(--tpc-sav)"></i>Savings</span>
+          <span><i style="background:var(--tpc-ves)"></i>Vested</span>
+          <span><i style="background:var(--tpc-ret)"></i>Retirement</span>
+        </div>
+        <div class="tpc-chart" id="tpc-chart-split"><div class="tpc-tip"></div></div>
+        <div class="tpc-pots">
+          <div class="tpc-pot" style="--c:var(--tpc-sav)"><div class="tpc-k">Savings component</div><div class="tpc-v" id="tpc-o-sav">R0</div><div class="tpc-s">Can be withdrawn once per tax year (minimum <span class="tpc-min"></span>). Taxed at your marginal rate.</div></div>
+          <div class="tpc-pot" style="--c:var(--tpc-ves)"><div class="tpc-k">Vested component</div><div class="tpc-v" id="tpc-o-ves">R0</div><div class="tpc-s">Savings built up before 1 September 2024. The old rules still apply.</div></div>
+          <div class="tpc-pot" style="--c:var(--tpc-ret)"><div class="tpc-k">Retirement component</div><div class="tpc-v" id="tpc-o-ret">R0</div><div class="tpc-s">Locked in until retirement, when it must be used to buy an annuity (a monthly pension).</div></div>
+        </div>
+      </div>
+      <div class="tpc-card">
+        <h3>Tax on your withdrawal</h3>
+        <p id="tpc-o-taxnote"></p>
+        <div class="tpc-lines">
+          <div class="tpc-line"><span>Amount withdrawn</span><span id="tpc-o-gross">R0</span></div>
+          <div class="tpc-line tpc-neg"><span id="tpc-o-taxlbl">Income tax</span><span id="tpc-o-tax">R0</span></div>
+          <div class="tpc-line tpc-neg"><span>Fund admin fee</span><span id="tpc-o-fee">R0</span></div>
+          <div class="tpc-line tpc-total"><span>Cash in your pocket</span><span id="tpc-o-net">R0</span></div>
+        </div>
+        <div class="tpc-alert" id="tpc-o-alert" hidden></div>
+      </div>
+      <div class="tpc-callout">
+        <div class="tpc-k" id="tpc-o-costk">What this withdrawal costs you at retirement</div>
+        <div class="tpc-v" id="tpc-o-cost">R0</div>
+        <div class="tpc-s" id="tpc-o-costs"></div>
+      </div>
+      <div class="tpc-card">
+        <h3>Your retirement pot at age <span id="tpc-o-retage">65</span></h3>
+        <p>Projected value in today's money, by component.</p>
+        <div class="tpc-legend" aria-hidden="true">
+          <span><i style="background:var(--tpc-sav)"></i>Savings</span>
+          <span><i style="background:var(--tpc-ves)"></i>Vested</span>
+          <span><i style="background:var(--tpc-ret)"></i>Retirement</span>
+        </div>
+        <div class="tpc-chart" id="tpc-chart-ret"><div class="tpc-tip"></div></div>
+        <div class="tpc-big">
+          <div><div class="tpc-k">Monthly retirement income lost</div><div class="tpc-v tpc-bad" id="tpc-o-inc">R0</div></div>
+          <div><div class="tpc-k">Every R1 you take home now costs</div><div class="tpc-v tpc-bad" id="tpc-o-ratio">R0</div></div>
+        </div>
+        <details class="tpc-table">
+          <summary>Show table</summary>
+          <div class="tpc-tbl-wrap"><table><thead><tr><th>At retirement</th><th>Savings</th><th>Vested</th><th>Retirement</th><th>Total</th></tr></thead><tbody id="tpc-tbody"></tbody></table></div>
+        </details>
+      </div>
+      <div class="tpc-card tpc-info">
+        <h3>How the two-pot system works</h3>
+        <ul>
+          <li>Since 1 September 2024, a third of new contributions goes into the <strong>savings component</strong> and two-thirds into the <strong>retirement component</strong>.</li>
+          <li>Money saved before then stays in the <strong>vested component</strong>. A once-off "seed" of 10% of that balance (capped at <span class="tpc-seedcap"></span>) was moved into the savings component on 1 September 2024.</li>
+          <li>You can withdraw from the savings component once per tax year, with a minimum of <span class="tpc-min"></span>. The withdrawal is added to your taxable income and taxed at your marginal rate. SARS may also deduct any tax you owe.</li>
+          <li>The retirement component cannot be accessed before retirement. At retirement, it must be used to buy an annuity.</li>
+        </ul>
+      </div>
+      <div class="tpc-cta" id="tpc-cta" hidden>
+        <p id="tpc-cta-text"></p>
+        <a id="tpc-cta-link" href="#"></a>
+      </div>
+    </div>
+  </div>
+  <p class="tpc-disc" id="tpc-disc"></p>
+<script>
+(function () {
+  'use strict';
+  /* ======================= CONFIG: edit these ======================= */
+  var CONFIG = {
+    theme: 'light',                       /* 'light', 'dark' or 'auto' (follows the visitor's device) */
+    accentColor: '',                      /* e.g. '#b0122b' to match your brand. Leave '' for default blue */
+    taxYearLabel: '2026/27',
+    /* SARS individual tax brackets for the tax year: [upper limit of band, rate] */
+    taxBrackets: [[245100, 0.18], [383100, 0.26], [530200, 0.31], [695800, 0.36], [887000, 0.39], [1878600, 0.41], [Infinity, 0.45]],
+    rebates: { primary: 17820, secondary: 9765, tertiary: 3249 },   /* secondary from 65, tertiary from 75 */
+    /* Two-pot rules */
+    startDate: '2024-09-01',              /* two-pot start date */
+    savingsShare: 1 / 3,                  /* share of new contributions going to the savings component */
+    seedPct: 0.10,                        /* seed: 10% of the vested balance on 31 August 2024 ... */
+    seedCap: 30000,                       /* ... capped at this amount */
+    minWithdrawal: 2000,                  /* minimum savings withdrawal */
+    /* Optional call to action shown under the results (great for lead generation). Leave url '' to hide it. */
+    cta: { text: 'Thinking of making a withdrawal? Get advice first.', button: 'Speak to an adviser', url: '' },
+    disclaimer: 'This calculator gives illustrative estimates only and is not financial or tax advice. When you enter only a total balance, the split between components is an estimate: your fund\'s actual balances depend on your exact contributions, growth and the seed amount it calculated. Tax figures use the SARS individual tax tables for the year shown, assume your only income is the salary entered, and ignore medical tax credits and other deductions. SARS will issue a tax directive and may deduct other tax debt you owe. Projections are not guaranteed. Speak to a qualified financial adviser before making a withdrawal.'
+  };
+  /* ================================================================== */
+  var root = document.getElementById('tpc-calc');
+  if (!root) { return; }
+  root.setAttribute('data-theme-mode', CONFIG.theme);
+  if (CONFIG.accentColor) { root.style.setProperty('--tpc-accent', CONFIG.accentColor); }
+  function $(id) { return document.getElementById(id); }
+  function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), fn); }
+  var state = { bal: 'est', freq: 'once' };
+  /* ---------- formatting ---------- */
+  function fmtR(v) {
+    var n = Math.round(Math.abs(v));
+    var s = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (v < 0 ? '-R' : 'R') + s;
+  }
+  function fmtR2(v) {
+    var s = Math.abs(v).toFixed(2).replace('.', ',');
+    return (v < 0 ? '-R' : 'R') + s;
+  }
+  function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d).replace(/\.0+$/, '') + '%'; }
+  function num(id, fallback) {
+    var el = $(id);
+    var v = parseFloat(el.value);
+    if (isNaN(v)) { return fallback; }
+    var mn = parseFloat(el.min), mx = parseFloat(el.max);
+    if (!isNaN(mn)) { v = Math.max(mn, v); }
+    if (!isNaN(mx)) { v = Math.min(mx, v); }
+    return v;
+  }
+  /* ---------- tax ---------- */
+  function incomeTax(taxable, age) {
+    if (taxable <= 0) { return 0; }
+    var tax = 0, lower = 0, i, b;
+    for (i = 0; i < CONFIG.taxBrackets.length; i++) {
+      b = CONFIG.taxBrackets[i];
+      if (taxable > lower) { tax += (Math.min(taxable, b[0]) - lower) * b[1]; }
+      lower = b[0];
+    }
+    var reb = CONFIG.rebates.primary;
+    if (age >= 65) { reb += CONFIG.rebates.secondary; }
+    if (age >= 75) { reb += CONFIG.rebates.tertiary; }
+    return Math.max(0, tax - reb);
+  }
+  function marginalRate(taxable) {
+    var i;
+    for (i = 0; i < CONFIG.taxBrackets.length; i++) {
+      if (taxable <= CONFIG.taxBrackets[i][0]) { return CONFIG.taxBrackets[i][1]; }
+    }
+    return CONFIG.taxBrackets[CONFIG.taxBrackets.length - 1][1];
+  }
+  /* ---------- months since two-pot started ---------- */
+  function monthsSinceStart() {
+    var s = CONFIG.startDate.split('-'), now = new Date();
+    var m = (now.getFullYear() - parseInt(s[0], 10)) * 12 + (now.getMonth() - (parseInt(s[1], 10) - 1));
+    return Math.max(0, m);
+  }
+  /* ---------- split a total balance into the three components ----------
+     Contributions since the start date (with growth) are split 1/3 : 2/3.
+     The rest is pre-two-pot money; 10% of its 31 August 2024 value (capped)
+     was seeded into savings. Earlier withdrawals came out of savings. */
+  function estimateSplit(p) {
+    var months = monthsSinceStart();
+    var m = Math.pow(1 + p.growth, 1 / 12) - 1;
+    var mi = Math.pow(1 + p.infl, 1 / 12);
+    var fvc = 0, k, c = p.contrib / Math.pow(mi, months);
+    for (k = 0; k < months; k++) { fvc = fvc * (1 + m) + c; c *= mi; }
+    var total = p.total;
+    if (fvc > total) { fvc = total; }
+    var old = total - fvc;
+    var g = Math.pow(1 + m, months);
+    var atStart = (old + p.prior) / g;
+    var seed = Math.min(atStart * CONFIG.seedPct, CONFIG.seedCap);
+    var sav = seed * g + fvc * CONFIG.savingsShare - p.prior;
+    var ves = (atStart - seed) * g;
+    var ret = fvc * (1 - CONFIG.savingsShare);
+    if (sav < 0) { ves += sav; sav = 0; if (ves < 0) { ves = 0; } }
+    return { sav: sav, ves: ves, ret: ret, months: months, seed: seed };
+  }
+  /* ---------- project the three pots to retirement (in today's money) ---------- */
+  function project(p, pots, withdraw, yearly) {
+    var r = Math.pow((1 + p.growth) / (1 + p.infl), 1 / 12) - 1;
+    var sav = pots.sav, ves = pots.ves, ret = pots.ret;
+    var months = (p.ret - p.age) * 12, k, w;
+    var taken = [];
+    for (k = 0; k < months; k++) {
+      if (k % 12 === 0) {
+        if (k === 0 || yearly) {
+          w = Math.min(withdraw, sav);
+          if (w >= CONFIG.minWithdrawal) { sav -= w; taken.push(w); }
+        }
+      }
+      sav = sav * (1 + r) + p.contrib * CONFIG.savingsShare;
+      ret = ret * (1 + r) + p.contrib * (1 - CONFIG.savingsShare);
+      ves = ves * (1 + r);
+    }
+    if (months === 0) {
+      w = Math.min(withdraw, sav);
+      if (w >= CONFIG.minWithdrawal) { sav -= w; taken.push(w); }
+    }
+    return { sav: sav, ves: ves, ret: ret, total: sav + ves + ret, taken: taken };
+  }
+  /* ---------- read inputs ---------- */
+  function readInputs() {
+    var age = Math.round(num('tpc-age', 35));
+    var ret = Math.round(num('tpc-ret', 65));
+    if (ret < age) { ret = age; }
+    return {
+      age: age, ret: ret, salary: num('tpc-salary', 0), contrib: num('tpc-contrib', 0),
+      total: num('tpc-total', 0), prior: num('tpc-prior', 0),
+      ksav: num('tpc-ksav', 0), kves: num('tpc-kves', 0), kret: num('tpc-kret', 0),
+      wd: num('tpc-wd', 0), fee: num('tpc-fee', 0),
+      growth: num('tpc-growth', 10) / 100, infl: num('tpc-infl', 5) / 100, draw: num('tpc-draw', 5) / 100
+    };
+  }
+  /* ---------- main calculation ---------- */
+  function calculate() {
+    var p = readInputs();
+    var pots, note;
+    if (state.bal === 'est') {
+      pots = estimateSplit(p);
+      note = 'Estimated from your total balance, assuming your current contribution was paid for the ' + pots.months + ' months since 1 September 2024 and a seed of about ' + fmtR(pots.seed) + '. Your fund statement shows your exact balances.';
+    } else {
+      pots = { sav: p.ksav, ves: p.kves, ret: p.kret };
+      note = 'Based on the component balances you entered.';
+    }
+    var total = pots.sav + pots.ves + pots.ret;
+    $('tpc-o-splitnote').textContent = note;
+    $('tpc-o-sav').textContent = fmtR(pots.sav);
+    $('tpc-o-ves').textContent = fmtR(pots.ves);
+    $('tpc-o-ret').textContent = fmtR(pots.ret);
+    drawBars($('tpc-chart-split'), [{ label: 'Today', parts: [pots.sav, pots.ves, pots.ret] }], total);
+    /* ---------- withdrawal and tax ---------- */
+    var avail = Math.round(pots.sav);
+    var range = $('tpc-wd-range');
+    range.max = Math.max(CONFIG.minWithdrawal, Math.ceil(avail / 500) * 500);
+    var w = Math.min(p.wd, avail);
+    var alert = $('tpc-o-alert'), msg = '';
+    if (avail < CONFIG.minWithdrawal) {
+      msg = 'Your savings component (' + fmtR(avail) + ') is below the ' + fmtR(CONFIG.minWithdrawal) + ' minimum, so you cannot make a withdrawal yet.';
+      w = 0;
+    } else if (p.wd > avail) {
+      msg = 'You can withdraw at most ' + fmtR(avail) + ', the full value of your savings component. The figures below use that amount.';
+    } else if (w > 0) {
+      if (w < CONFIG.minWithdrawal) { msg = 'The minimum withdrawal is ' + fmtR(CONFIG.minWithdrawal) + '.'; w = 0; }
+    }
+    $('tpc-wd-hint').textContent = 'Available in your savings component: ' + fmtR(avail) + '. Minimum ' + fmtR(CONFIG.minWithdrawal) + '.';
+    var income = p.salary * 12;
+    var tax = w > 0 ? incomeTax(income + w, p.age) - incomeTax(income, p.age) : 0;
+    var fee = w > 0 ? Math.min(p.fee, w - tax) : 0;
+    var net = w - tax - fee;
+    var mrBefore = marginalRate(income), mrAfter = marginalRate(income + w);
+    $('tpc-o-gross').textContent = fmtR(w);
+    $('tpc-o-taxlbl').textContent = 'Income tax (' + (w > 0 ? pct(tax / w) + ' of the withdrawal' : 'none') + ')';
+    $('tpc-o-tax').textContent = '-' + fmtR(tax);
+    $('tpc-o-fee').textContent = '-' + fmtR(fee);
+    $('tpc-o-net').textContent = fmtR(net);
+    var tn = 'Your withdrawal is added to your taxable income of ' + fmtR(income) + ' a year for the ' + CONFIG.taxYearLabel + ' tax year. Your marginal tax rate is ' + pct(mrBefore, 0) + '.';
+    if (w > 0 ? mrAfter > mrBefore : false) { tn += ' This withdrawal pushes part of your income into the ' + pct(mrAfter, 0) + ' bracket.'; }
+    if (income <= 0) { tn = 'Enter your monthly income to see the tax on your withdrawal.'; }
+    $('tpc-o-taxnote').textContent = tn;
+    if (msg) { alert.hidden = false; alert.textContent = ''; var st = document.createElement('strong'); st.textContent = 'Note: '; alert.appendChild(st); alert.appendChild(document.createTextNode(msg)); }
+    else { alert.hidden = true; }
+    /* ---------- impact at retirement ---------- */
+    var yearly = state.freq === 'yearly';
+    var base = project(p, pots, 0, false);
+    var withW = project(p, pots, w, yearly);
+    var loss = base.total - withW.total;
+    var years = p.ret - p.age;
+    var i, totW = 0, totTax = 0, totFee = 0, t;
+    for (i = 0; i < withW.taken.length; i++) {
+      t = incomeTax(income + withW.taken[i], p.age) - incomeTax(income, p.age);
+      totW += withW.taken[i]; totTax += t; totFee += Math.min(p.fee, withW.taken[i] - t);
+    }
+    var totNet = totW - totTax - totFee;
+    $('tpc-o-retage').textContent = p.ret;
+    if (w <= 0) {
+      $('tpc-o-costk').textContent = 'What a withdrawal costs you at retirement';
+      $('tpc-o-cost').textContent = 'R0';
+      $('tpc-o-costs').textContent = 'Enter a withdrawal amount to see its effect on your retirement savings.';
+    } else if (yearly) {
+      $('tpc-o-costk').textContent = 'What withdrawing every year costs you at retirement';
+      $('tpc-o-cost').textContent = fmtR(loss) + ' less';
+      $('tpc-o-costs').textContent = withW.taken.length + ' withdrawals totalling ' + fmtR(totW) + ' (' + fmtR(totNet) + ' after ' + fmtR(totTax) + ' tax' + (totFee > 0 ? ' and fees' : '') + ') leave you with ' + fmtR(withW.total) + ' instead of ' + fmtR(base.total) + ' at age ' + p.ret + ', in today\'s money.';
+    } else {
+      $('tpc-o-costk').textContent = 'What this withdrawal costs you at retirement';
+      $('tpc-o-cost').textContent = fmtR(loss) + ' less';
+      $('tpc-o-costs').textContent = 'Taking ' + fmtR(w) + ' now (' + fmtR(net) + ' after tax' + (fee > 0 ? ' and fees' : '') + ') leaves you with ' + fmtR(withW.total) + ' instead of ' + fmtR(base.total) + ' at age ' + p.ret + ', in today\'s money' + (years > 0 ? ', because the money loses ' + years + (years === 1 ? ' year' : ' years') + ' of growth.' : '.');
+    }
+    $('tpc-o-inc').textContent = fmtR(loss * p.draw / 12) + ' pm';
+    $('tpc-o-ratio').textContent = totNet > 0 ? fmtR2(loss / totNet) : 'R0,00';
+    drawBars($('tpc-chart-ret'), [
+      { label: 'No withdrawal', parts: [base.sav, base.ves, base.ret] },
+      { label: yearly ? 'Yearly withdrawals' : 'With withdrawal', parts: [withW.sav, withW.ves, withW.ret] }
+    ], Math.max(base.total, withW.total));
+    var tb = $('tpc-tbody');
+    while (tb.firstChild) { tb.removeChild(tb.firstChild); }
+    [['No withdrawal', base], [yearly ? 'Yearly withdrawals' : 'With withdrawal', withW]].forEach(function (row) {
+      var tr = document.createElement('tr');
+      [row[0], fmtR(row[1].sav), fmtR(row[1].ves), fmtR(row[1].ret), fmtR(row[1].total)].forEach(function (v) {
+        var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  }
+  /* ---------- horizontal stacked bars (inline SVG, no libraries) ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var NAMES = ['Savings', 'Vested', 'Retirement'];
+  var COLORS = ['var(--tpc-sav)', 'var(--tpc-ves)', 'var(--tpc-ret)'];
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name), k;
+    for (k in attrs) { if (Object.prototype.hasOwnProperty.call(attrs, k)) { e.setAttribute(k, attrs[k]); } }
+    if (parent) { parent.appendChild(e); }
+    return e;
+  }
+  function drawBars(box, rows, maxV) {
+    var old = box.querySelector('svg'), tip = box.querySelector('.tpc-tip');
+    if (old) { box.removeChild(old); }
+    var W = Math.max(260, box.clientWidth || 600);
+    var labelled = rows.length > 1, lw = 0;
+    var barH = 26, gap = labelled ? 14 : 0, top = labelled ? 20 : 0;
+    var H = rows.length * (barH + top) + (rows.length - 1) * gap;
+    var iw = W - lw;
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': rows.map(function (r) { return r.label + ': ' + r.parts.map(function (v, i) { return NAMES[i] + ' ' + fmtR(v); }).join(', '); }).join('. ') });
+    rows.forEach(function (row, ri) {
+      var y = ri * (barH + top + gap) + top, x = lw, tot = 0, t;
+      row.parts.forEach(function (v) { tot += v; });
+      if (labelled) {
+        t = el('text', { x: 0, y: y - 6 }, svg);
+        t.textContent = row.label + ' (' + fmtR(tot) + ')';
+      }
+      el('rect', { x: lw, y: y, width: iw, height: barH, rx: 4, fill: 'var(--tpc-grid)' }, svg);
+      row.parts.forEach(function (v, i) {
+        if (v <= 0 || maxV <= 0) { return; }
+        var w = iw * v / maxV;
+        var seg = el('rect', { x: x, y: y, width: Math.max(1, w - 2), height: barH, rx: 3, fill: COLORS[i] }, svg);
+        var hit = el('rect', { x: x, y: y - 4, width: Math.max(6, w), height: barH + 8, fill: 'transparent' }, svg);
+        var label = NAMES[i] + ': ' + fmtR(v) + ' (' + pct(tot > 0 ? v / tot : 0, 0) + ')';
+        var show = function () {
+          tip.textContent = '';
+          var b = document.createElement('b'); b.textContent = row.label; tip.appendChild(b);
+          tip.appendChild(document.createTextNode(label));
+          var s = box.clientWidth / W, cx = (x + w / 2) * s, tw = tip.offsetWidth;
+          tip.style.left = Math.max(0, Math.min(box.clientWidth - tw, cx - tw / 2)) + 'px';
+          tip.style.top = (y * s - tip.offsetHeight - 6) + 'px';
+          tip.style.opacity = 1;
+          seg.setAttribute('stroke', 'var(--tpc-text)'); seg.setAttribute('stroke-width', 1.5);
+        };
+        var hide = function () { tip.style.opacity = 0; tip.style.left = '0px'; seg.removeAttribute('stroke'); };
+        hit.addEventListener('mouseenter', show);
+        hit.addEventListener('mouseleave', hide);
+        hit.addEventListener('touchstart', show, { passive: true });
+        x += w;
+      });
+    });
+    box.insertBefore(svg, box.firstChild);
+  }
+  /* ---------- wiring ---------- */
+  function setVal(id, v) {
+    $(id).value = v;
+    var r = root.querySelector('input[type="range"][data-for="' + id + '"]');
+    if (r) { r.value = v; }
+  }
+  each('[data-bal]', function (btn) {
+    btn.addEventListener('click', function () {
+      state.bal = btn.getAttribute('data-bal');
+      each('[data-bal]', function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      $('tpc-f-est').hidden = state.bal !== 'est';
+      $('tpc-f-known').hidden = state.bal !== 'known';
+      calculate();
+    });
+  });
+  each('[data-freq]', function (btn) {
+    btn.addEventListener('click', function () {
+      state.freq = btn.getAttribute('data-freq');
+      each('[data-freq]', function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      calculate();
+    });
+  });
+  each('input[type="range"][data-for]', function (r) {
+    var target = $(r.getAttribute('data-for'));
+    r.addEventListener('input', function () { target.value = r.value; calculate(); });
+    target.addEventListener('input', function () { r.value = target.value; calculate(); });
+  });
+  each('.tpc-num input', function (inp) {
+    if (!root.querySelector('input[type="range"][data-for="' + inp.id + '"]')) { inp.addEventListener('input', calculate); }
+    inp.addEventListener('change', function () { setVal(inp.id, num(inp.id, parseFloat(inp.defaultValue))); calculate(); });
+  });
+  each('.tpc-min', function (s) { s.textContent = fmtR(CONFIG.minWithdrawal); });
+  each('.tpc-seedcap', function (s) { s.textContent = fmtR(CONFIG.seedCap); });
+  if (CONFIG.cta.url) {
+    $('tpc-cta').hidden = false;
+    $('tpc-cta-text').textContent = CONFIG.cta.text;
+    $('tpc-cta-link').textContent = CONFIG.cta.button;
+    $('tpc-cta-link').href = CONFIG.cta.url;
+  }
+  $('tpc-disc').textContent = CONFIG.disclaimer;
+  var lastW = 0;
+  function onResize() {
+    var w = $('tpc-chart-split').clientWidth;
+    if (Math.abs(w - lastW) > 4) { lastW = w; calculate(); }
+  }
+  if (window.ResizeObserver) { new ResizeObserver(onResize).observe(root); }
+  else { window.addEventListener('resize', onResize); }
+  calculate();
+})();
+</script>
+</div>

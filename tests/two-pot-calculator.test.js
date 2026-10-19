@@ -1,4 +1,6 @@
 // Runs the build-spec test cases against two-pot-calculator.html in a real browser.
+// The suite runs twice: on the file as-is, and on a copy with every backslash removed,
+// which is what the Divi Code module does to pasted code.
 // Usage: npm install playwright, then: node tests/two-pot-calculator.test.js
 // (Set CHROMIUM_PATH to use an already installed Chromium.)
 const { chromium } = require('playwright');
@@ -6,9 +8,16 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const snippet = fs.readFileSync(path.join(__dirname, '..', 'two-pot-calculator.html'), 'utf8');
-const page = path.join(os.tmpdir(), 'two-pot-test-page.html');
-fs.writeFileSync(page, '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test</title></head><body style="font-family:sans-serif;margin:0;padding:16px">' + snippet + '</body></html>');
+const original = fs.readFileSync(path.join(__dirname, '..', 'two-pot-calculator.html'), 'utf8');
+function writePage(name, snippet) {
+  const file = path.join(os.tmpdir(), name);
+  fs.writeFileSync(file, '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test</title></head><body style="font-family:sans-serif;margin:0;padding:16px">' + snippet + '</body></html>');
+  return file;
+}
+const variants = [
+  ['as written', writePage('two-pot-test-page.html', original)],
+  ['Divi (backslashes stripped)', writePage('two-pot-test-page-divi.html', original.split(String.fromCharCode(92)).join(''))]
+];
 
 const R = n => 'R' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 let failures = 0;
@@ -20,6 +29,8 @@ function check(name, actual, expected) {
 
 (async () => {
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+  for (const [variant, page] of variants) {
+  console.log('\n===== ' + variant + ' =====');
   const p = await browser.newPage({ viewport: { width: 390, height: 900 } });
   const errors = [];
   const requests = [];
@@ -115,6 +126,9 @@ function check(name, actual, expected) {
   check('no horizontal scroll at 390px', await p.evaluate(() => document.documentElement.scrollWidth <= 390), true);
   check('no network requests', requests.length, 0);
   check('no script errors', errors.length, 0);
+  check('Calculate never leaves the page', p.url(), 'file://' + page);
+  await p.close();
+  }
 
   await browser.close();
   console.log(failures ? `\n${failures} FAILED` : '\nAll checks passed');

@@ -234,18 +234,30 @@
   function $(id) { return document.getElementById(id); }
   var state = { mode: 'rand', strategy: CONFIG.defaultStrategy };
   /* ---------- formatting ---------- */
+  /* No backslashes or regular expressions anywhere in this script: some page builders (Divi) strip backslashes. */
+  function groupDigits(n, sep) {
+    var s = String(n), out = '';
+    while (s.length > 3) { out = sep + s.slice(-3) + out; s = s.slice(0, -3); }
+    return s + out;
+  }
+  /* "12.0" becomes "12", "12.50" stays "12.50" */
+  function dropZeroDecimals(s) {
+    var p = s.split('.');
+    if (p.length === 2) { if (Number(p[1]) === 0) { return p[0]; } }
+    return s;
+  }
   function fmtR(v) {
     var n = Math.round(Math.abs(v));
-    var s = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    var s = groupDigits(n, ' ');
     return (v < 0 ? '-R' : 'R') + s;
   }
   function fmtShort(v) {
     var a = Math.abs(v);
-    if (a >= 1e6) { return 'R' + (v / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'm'; }
+    if (a >= 1e6) { return 'R' + dropZeroDecimals((v / 1e6).toFixed(a >= 1e7 ? 0 : 1)) + 'm'; }
     if (a >= 1e3) { return 'R' + Math.round(v / 1e3) + 'k'; }
     return 'R' + Math.round(v);
   }
-  function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d).replace(/\.0+$/, '') + '%'; }
+  function pct(v, d) { return dropZeroDecimals((v * 100).toFixed(d === undefined ? 1 : d)) + '%'; }
   function num(id, fallback) {
     var el = $(id);
     var v = parseFloat(el.value);
@@ -360,7 +372,7 @@
       st.className = 'wra-status ' + (ratio >= 1 ? 'ok' : 'low');
       st.textContent = ratio >= 1 ? 'On track. ' : 'Shortfall. ';
       track.appendChild(st);
-      track.appendChild(document.createTextNode('Your projected income of ' + fmtR(incReal) + ' a month is ' + Math.round(ratio * 100) + '% of your goal of ' + fmtR(targetInc) + ' a month (' + Math.round(p.target * 100) + '% of your income at retirement, in today\'s money).'));
+      track.appendChild(document.createTextNode('Your projected income of ' + fmtR(incReal) + ' a month is ' + Math.round(ratio * 100) + '% of your goal of ' + fmtR(targetInc) + ' a month (' + Math.round(p.target * 100) + '% of your income at retirement, in today' + "'" + 's money).'));
       var need = $('wra-o-need');
       if (ratio >= 1) {
         need.textContent = 'Keep it up. You could reach your goal with a monthly contribution of about ' + fmtR(neededC) + ' (' + (p.salary > 0 ? pct(neededC / p.salary) : '') + ' of your income).';
@@ -423,7 +435,7 @@
     var n = a.length - 1;
     function x(i2) { return pad.l + (n === 0 ? 0 : iw * i2 / n); }
     function y(v) { return pad.t + ih - ih * v / yMax; }
-    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': 'Line chart of projected retirement savings by age, in today\'s money' });
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': "Line chart of projected retirement savings by age, in today's money" });
     var g = el('g', {}, svg), t, v;
     for (i = 0; i <= ticks; i++) {
       v = tick * i;
